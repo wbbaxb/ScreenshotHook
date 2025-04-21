@@ -1,0 +1,195 @@
+﻿<Window
+    x:Class="ScreenshotHook.Presentation.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:ScreenshotHook.Presentation.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:ScreenshotHook.Presentation.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    Title="ScreenHook"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="NoResize"
+    SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
+
+        <Style x:Key="cbxTbStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="40" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource mainColor}" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="White" />
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="5" />
+                </Style>
+            </Style.Resources>
+        </Style>
+    </Window.Resources>
+
+    <Border
+        Width="500"
+        Height="300"
+        Background="White"
+        BorderBrush="{StaticResource mainColor}"
+        BorderThickness="2"
+        CornerRadius="10">
+        <i:Interaction.Behaviors>
+            <behaviors:ItemMouseDownBehavior />
+        </i:Interaction.Behaviors>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <StackPanel
+                    Margin="10"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Cursor="Hand"
+                        FontSize="16"
+                        Text="—"
+                        ToolTip="最小化">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonDown">
+                                <i:InvokeCommandAction Command="{Binding MinsizeCommand}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBlock>
+
+                    <TextBlock
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Cursor="Hand"
+                        FontSize="16"
+                        Text="✕"
+                        ToolTip="关闭">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonDown">
+                                <i:InvokeCommandAction Command="{Binding CloseCommand}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel
+                Grid.Row="1"
+                Margin="20,0"
+                VerticalAlignment="Center">
+
+                <Grid Margin="0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox ItemsSource="{Binding FilteredProcessInfos}" SelectedItem="{Binding ProcessInfo}">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Green" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                        
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid MaxWidth="450" ToolTip="{Binding ProcessName}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Style="{StaticResource cbxTbStyle}" Text="{Binding ProcessId}" />
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="10,0"
+                                        Style="{StaticResource cbxTbStyle}"
+                                        Text="-" />
+
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Foreground="{StaticResource mainColor}"
+                                        Style="{StaticResource cbxTbStyle}"
+                                        Text="{Binding ProcessName}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Button
+                        Grid.Column="1"
+                        Width="60"
+                        Margin="10,0,0,0"
+                        Command="{Binding RefreshCommand}"
+                        Content="Refresh" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        Height="40"
+                        VerticalContentAlignment="Center"
+                        FontSize="18"
+                        Text="{Binding FilterText}" />
+
+                    <Button
+                        Grid.Column="1"
+                        Width="60"
+                        Margin="10,0,0,0"
+                        Command="{Binding FilterCommand}"
+                        Content="Filter" />
+                </Grid>
+
+                <Button
+                    Margin="0,10"
+                    Command="{Binding HookCommand}"
+                    Content="Hook" />
+
+                <Button Command="{Binding UnHookCommand}" Content="UnHook" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
