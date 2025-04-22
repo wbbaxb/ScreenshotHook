@@ -1,6 +1,7 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using ScreenshotHook.Presentation.ObservableObjects;
+using ScreenshotHook.Presentation.Utilities;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -103,7 +104,26 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private void Hook()
         {
-            //TODO: 注入逻辑
+            if(ProcessInfo == null)
+            {
+                MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var watermarkData = new
+            {
+                Text = "Test",
+                FontName = "SimSun",
+                FontSize = 18,
+                ColorR = 128,
+                ColorG = 128,
+                ColorB = 128,
+                ColorA = 255,
+            };
+
+            string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
+
+            HookApi.Hook(ProcessInfo.ProcessId, watermarkJson);
         }
 
         private void UnHook()

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 <PropertyGroup>
 	<OutputType>WinExe</OutputType>
-	<TargetFramework>net6.0-windows</TargetFramework>
+	<TargetFramework>net8.0-windows</TargetFramework>
 	<UseWPF>true</UseWPF>
-	<BaseOutputPath>..\builds</BaseOutputPath>
 	<ApplicationIcon>Images/Logo.ico</ApplicationIcon>
+	<BaseOutputPath>..\builds</BaseOutputPath>
 	<PlatformTarget>x64</PlatformTarget>
 	<AssemblyName>ScreenshotHook</AssemblyName>
 	<RootNamespace>ScreenshotHook.Presentation</RootNamespace>
@@ -20,5 +20,5 @@
  <ItemGroup>
   <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
   <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
- </ItemGroup>	
+ </ItemGroup>
 </Project>
