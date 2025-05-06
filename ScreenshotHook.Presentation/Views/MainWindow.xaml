@@ -398,7 +398,7 @@
                         VerticalAlignment="Center"
                         FontSize="16"
                         Foreground="Gray"
-                        Text="{Binding ProcessInfo.ProcessName, StringFormat=选中进程: {0}}" />
+                        Text="{Binding ProcessInfo.ProcessName, StringFormat=目标进程: {0}}" />
 
                     <Grid Margin="0,10">
                         <Grid.ColumnDefinitions>

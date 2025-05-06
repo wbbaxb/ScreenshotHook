@@ -72,13 +72,13 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             Watermark = new WatermarkObservableObject()
             {
-                Text = "Test",
-                ColorR = 128,
-                ColorG = 128,
-                ColorB = 128,
-                ColorA = 255,
-                FontSize = 20,
-                FontFamily = "Microsoft YaHei"
+                Text = Properties.Settings.Default.WatermarkText,
+                ColorR = Properties.Settings.Default.WatermarkColorR,
+                ColorG = Properties.Settings.Default.WatermarkColorG,
+                ColorB = Properties.Settings.Default.WatermarkColorB,
+                ColorA = Properties.Settings.Default.WatermarkColorA,
+                FontSize = Properties.Settings.Default.WatermarkFontSize,
+                FontFamily = Properties.Settings.Default.WatermarkFontFamily,
             };
 
             InitializeFontSizes();
@@ -155,6 +155,8 @@ namespace ScreenshotHook.Presentation.ViewModels
                 return;
             }
 
+            SaveSettingsIfChanged();
+
             var watermarkData = new
             {
                 Text = Watermark.Text,
@@ -169,6 +171,47 @@ namespace ScreenshotHook.Presentation.ViewModels
             string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
 
             HookApi.Hook(ProcessInfo.ProcessId, watermarkJson);
+        }
+
+        private void SaveSettingsIfChanged()
+        {
+            bool needSave = false;
+            
+            needSave |= UpdateSettingIfChanged(Watermark.Text, Properties.Settings.Default.WatermarkText,
+                v => Properties.Settings.Default.WatermarkText = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.ColorR, Properties.Settings.Default.WatermarkColorR,
+                v => Properties.Settings.Default.WatermarkColorR = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.ColorG, Properties.Settings.Default.WatermarkColorG,
+                v => Properties.Settings.Default.WatermarkColorG = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.ColorB, Properties.Settings.Default.WatermarkColorB,
+                v => Properties.Settings.Default.WatermarkColorB = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.ColorA, Properties.Settings.Default.WatermarkColorA,
+                v => Properties.Settings.Default.WatermarkColorA = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.FontSize, Properties.Settings.Default.WatermarkFontSize,
+                v => Properties.Settings.Default.WatermarkFontSize = v);
+                
+            needSave |= UpdateSettingIfChanged(Watermark.FontFamily, Properties.Settings.Default.WatermarkFontFamily,
+                v => Properties.Settings.Default.WatermarkFontFamily = v);
+                
+            if (needSave)
+            {
+                Properties.Settings.Default.Save();
+            }
+        }
+        
+        private bool UpdateSettingIfChanged<T>(T newValue, T currentValue, Action<T> updateAction)
+        {
+            if (!object.Equals(newValue, currentValue))
+            {
+                updateAction(newValue);
+                return true;
+            }
+            return false;
         }
 
         private void UnHook()
