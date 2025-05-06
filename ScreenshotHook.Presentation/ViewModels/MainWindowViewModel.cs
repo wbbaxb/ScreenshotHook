@@ -18,6 +18,7 @@ namespace ScreenshotHook.Presentation.ViewModels
     {
         private ProcessInfoObservableObject _processInfo;
         private string _filterText;
+        private WatermarkObservableObject _watermark;
 
         public ProcessInfoObservableObject ProcessInfo
         {
@@ -31,7 +32,17 @@ namespace ScreenshotHook.Presentation.ViewModels
             set { _filterText = value; OnPropertyChanged(); }
         }
 
+        public WatermarkObservableObject Watermark
+        {
+            get { return _watermark; }
+            set { _watermark = value; OnPropertyChanged(); }
+        }
+
         public ObservableCollection<ProcessInfoObservableObject> ProcessInfos { get; set; }
+
+        public ObservableCollection<int> FontSizes { get; set; }
+
+        public ObservableCollection<string> FontFamilies { get; set; }
 
         public ICollectionView FilteredProcessInfos { get; }
 
@@ -59,10 +70,44 @@ namespace ScreenshotHook.Presentation.ViewModels
                 return false;
             };
 
+            Watermark = new WatermarkObservableObject()
+            {
+                Text = "Test",
+                ColorR = 128,
+                ColorG = 128,
+                ColorB = 128,
+                ColorA = 255,
+                FontSize = 20,
+                FontFamily = "Microsoft YaHei"
+            };
+
+            InitializeFontSizes();
+
+            InitializeFontFamilies();
+
             GetProcessesAsync().ContinueWith(processes =>
             {
                 Application.Current.Dispatcher.Invoke(() => BindingProcesses(processes.Result));
             });
+        }
+
+        private void InitializeFontFamilies()
+        {
+            FontFamilies = new ObservableCollection<string>();
+            foreach (var fontFamily in System.Windows.Media.Fonts.SystemFontFamilies)
+            {
+                FontFamilies.Add(fontFamily.Source);
+            }
+        }
+
+        private void InitializeFontSizes()
+        {
+            FontSizes = new ObservableCollection<int>();
+
+            for (int i = 6; i <= 50; i++)
+            {
+                FontSizes.Add(i);
+            }
         }
 
         public ICommand RefreshCommand => new RelayCommand(async () =>
@@ -104,7 +149,7 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private void Hook()
         {
-            if(ProcessInfo == null)
+            if (ProcessInfo == null)
             {
                 MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -112,13 +157,13 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             var watermarkData = new
             {
-                Text = "Test",
-                FontName = "SimSun",
-                FontSize = 18,
-                ColorR = 128,
-                ColorG = 128,
-                ColorB = 128,
-                ColorA = 255,
+                Text = Watermark.Text,
+                FontName = Watermark.FontFamily,
+                FontSize = Watermark.FontSize,
+                ColorR = Watermark.ColorR,
+                ColorG = Watermark.ColorG,
+                ColorB = Watermark.ColorB,
+                ColorA = Watermark.ColorA,
             };
 
             string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
