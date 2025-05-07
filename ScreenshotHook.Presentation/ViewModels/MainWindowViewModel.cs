@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using ScreenshotHook.Presentation.ObservableObjects;
 using ScreenshotHook.Presentation.Utilities;
@@ -128,7 +128,21 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private async Task<Process[]> GetProcessesAsync()
         {
-            return await Task.Run(Process.GetProcesses);
+            return await Task.Run(() => 
+            {
+                var allProcesses = Process.GetProcesses();
+                return allProcesses.Where(p => 
+                {
+                    try
+                    {
+                        return p.SessionId > 0;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }).ToArray();
+            });
         }
 
         private void BindingProcesses(Process[] processes)
