@@ -68,22 +68,22 @@ namespace ScreenshotHook.Injector
         }
 
         [DllExport]
-        public static void Hook(int processId, string watermark)
+        public static bool Hook(int processId, string watermark)
         {
             if (!LoadDll())
             {
-                return;
+                return false;
             }
 
             if (!File.Exists(DllPath))
             {
                 ShowError("The dll path is incorrect!");
-                return;
+                return false;
             }
 
             if (!CheckPlatform(processId))
             {
-                return;
+                return false;
             }
 
             try
@@ -95,35 +95,35 @@ namespace ScreenshotHook.Injector
                     DllPath,
                     watermark
                 );
+
+                return true;
             }
             catch (Exception ex)
             {
                 ShowError($"Process ID: {processId}: Injection failed: {ex}");
-                return;
+                return false;
             }
-
-            //MessageBox.Show("Injection successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         [DllExport]
-        public static void UnHook(int processId)
+        public static bool UnHook(int processId)
         {
             try
             {
                 if (!LoadDll())
                 {
-                    return;
+                    return false;
                 }
 
                 if (!File.Exists(DllPath))
                 {
                     ShowError("The dll path is incorrect!");
-                    return;
+                    return false;
                 }
 
                 if (!CheckPlatform(processId))
                 {
-                    return;
+                    return false;
                 }
 
                 try
@@ -136,16 +136,18 @@ namespace ScreenshotHook.Injector
                         UNHOOK_COMMAND
                     );
 
-                    //MessageBox.Show("UnHook successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     ShowError($"Process ID: {processId}: UnHook failed: {ex}");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 ShowError("UnHook failed: " + ex.Message);
+                return false;
             }
         }
 
