@@ -6,5 +6,8 @@ namespace ScreenshotHook.Presentation.Utilities
     {
         [DllImport("ScreenshotHook.Injector.dll", EntryPoint = "Hook")]
         public static extern void Hook(int processId,string watermark);
+        
+        [DllImport("ScreenshotHook.Injector.dll", EntryPoint = "UnHook")]
+        public static extern void UnHook(int processId);
     }
 }

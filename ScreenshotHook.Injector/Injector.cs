@@ -1,4 +1,4 @@
-﻿using EasyHook;
+using EasyHook;
 using ScreenshotHook.Framework;
 using System;
 using System.Diagnostics;
@@ -10,15 +10,18 @@ namespace ScreenshotHook.Injector
 {
     public class Injector
     {
-        [DllExport]
-        public static void Hook(int processId, string watermark)
+        private const string UNHOOK_COMMAND = "UNHOOK_COMMAND"; // 卸载钩子标识
+
+        private static string DllPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenshotHook.HookLibrary.dll");
+
+        private static bool LoadDll()
         {
             var dllDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dlls");
 
             if (!Directory.Exists(dllDir))
             {
                 ShowError("The dll directory does not exist");
-                return;
+                return false;
             }
 
             string dllName = Environment.Is64BitProcess ? "EasyHook64.dll" : "EasyHook32.dll";
@@ -27,22 +30,15 @@ namespace ScreenshotHook.Injector
             if (hModule == IntPtr.Zero)
             {
                 int error = Marshal.GetLastWin32Error();
-
-                if (error != 0)
-                {
-                    ShowError("Failed to set the dll path: " + error);
-                    return;
-                }
+                ShowError("Failed to load the dll: " + error);
+                return false;
             }
 
-            string dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenshotHook.HookLibrary.dll");
+            return true;
+        }
 
-            if (!File.Exists(dllPath))
-            {
-                ShowError("The dll path is incorrect!");
-                return;
-            }
-
+        private static bool CheckPlatform(int processId)
+        {
             try
             {
                 var process = Process.GetProcessById(processId);
@@ -50,7 +46,7 @@ namespace ScreenshotHook.Injector
                 if (process == null)
                 {
                     ShowError($"id: {processId} is not running!");
-                    return;
+                    return false;
                 }
 
                 var currentPlat = Environment.Is64BitProcess ? 64 : 32;
@@ -60,30 +56,96 @@ namespace ScreenshotHook.Injector
                 {
                     ShowError(string.Format($@"The current program is {currentPlat} bit, and the target process is {targetPlat} bit,
                         Please adjust the compilation options and try again!"));
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        [DllExport]
+        public static void Hook(int processId, string watermark)
+        {
+            if (!LoadDll())
+            {
+                return;
+            }
+
+            if (!File.Exists(DllPath))
+            {
+                ShowError("The dll path is incorrect!");
+                return;
+            }
+
+            if (!CheckPlatform(processId))
+            {
+                return;
+            }
+
+            try
+            {
+                RemoteHooking.Inject(
+                    processId,
+                    InjectionOptions.Default,
+                    DllPath,
+                    DllPath,
+                    watermark
+                );
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Process ID: {processId}: Injection failed: {ex}");
+                return;
+            }
+
+            MessageBox.Show("Injection successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [DllExport]
+        public static void UnHook(int processId)
+        {
+            try
+            {
+                if (!LoadDll())
+                {
+                    return;
+                }
+
+                if (!File.Exists(DllPath))
+                {
+                    ShowError("The dll path is incorrect!");
+                    return;
+                }
+
+                if (!CheckPlatform(processId))
+                {
                     return;
                 }
 
                 try
                 {
                     RemoteHooking.Inject(
-                        process.Id,
+                        processId,
                         InjectionOptions.Default,
-                        dllPath,
-                        dllPath,
-                        watermark
+                        DllPath,
+                        DllPath,
+                        UNHOOK_COMMAND
                     );
+
+                    MessageBox.Show("UnHook successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    ShowError($"Process ID: {process.Id}: Injection failed: {ex}");
-                    return;
+                    ShowError($"Process ID: {processId}: UnHook failed: {ex}");
                 }
-
-                MessageBox.Show("Injection successful!", "Success", MessageBoxButton.OK);
             }
             catch (Exception ex)
             {
-                ShowError("Injection failed: " + ex.Message);
+                ShowError("UnHook failed: " + ex.Message);
             }
         }
 

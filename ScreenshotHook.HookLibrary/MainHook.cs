@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using ScreenshotHook.Framework;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -11,22 +12,112 @@ namespace ScreenshotHook.HookLibrary
 {
     public class MainHook : IEntryPoint
     {
+        private static List<LocalHook> _hooks = new List<LocalHook>();
+        private static readonly object _lock = new object();
+
         private Watermark _watermarkData;
+        private LocalHook _hook;
+        private bool _shouldUnhook = false;
+        private const string UNHOOK_COMMAND = "UNHOOK_COMMAND";
 
         public MainHook(RemoteHooking.IContext context, string watermarkJson)
         {
+            if (watermarkJson == UNHOOK_COMMAND)
+            {
+                _shouldUnhook = true;
+                return;
+            }
+
             _watermarkData = JsonConvert.DeserializeObject<Watermark>(watermarkJson);
         }
 
         public void Run(RemoteHooking.IContext context, string watermarkJson)
         {
-            var hook = LocalHook.Create(LocalHook.GetProcAddress("gdi32.dll", "BitBlt"),
-                new Win32.BitBltDelegate(BitBlt_Hooked),
-                this);
+            if (_shouldUnhook)
+            {
+                UninstallAllHooks();
+                return;
+            }
 
-            hook.ThreadACL.SetExclusiveACL(new int[] { 0 });
-            RemoteHooking.WakeUpProcess();
-            Thread.Sleep(-1);
+            try
+            {
+                _hook = LocalHook.Create(LocalHook.GetProcAddress("gdi32.dll", "BitBlt"),
+                    new Win32.BitBltDelegate(BitBlt_Hooked),
+                    this);
+
+                _hook.ThreadACL.SetExclusiveACL(new int[] { 0 });
+
+                lock (_lock)
+                {
+                    _hooks.Add(_hook);
+                }
+
+                RemoteHooking.WakeUpProcess();
+
+                // 等待，直到进程结束或钩子被卸载
+                while (true)
+                {
+                    Thread.Sleep(1000);
+
+                    lock (_lock)
+                    {
+                        if (!_hooks.Contains(_hook))
+                        {
+                            // 钩子已被卸载，退出循环
+                            break;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                CleanupHook();
+            }
+        }
+
+        /// <summary>
+        /// 卸载所有钩子
+        /// </summary>
+        private void UninstallAllHooks()
+        {
+            lock (_lock)
+            {
+                foreach (var hook in _hooks)
+                {
+                    try
+                    {
+                        hook.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("卸载钩子失败: " + ex.Message);
+                    }
+                }
+
+                _hooks.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 卸载单个钩子
+        /// </summary>
+        private void CleanupHook()
+        {
+            if (_hook != null)
+            {
+                lock (_lock)
+                {
+                    try
+                    {
+                        _hooks.Remove(_hook);
+                        _hook.Dispose();
+                    }
+                    finally
+                    {
+                        _hook = null;
+                    }
+                }
+            }
         }
 
         // 劫持后的 BitBlt
@@ -47,7 +138,6 @@ namespace ScreenshotHook.HookLibrary
 
             using (var graphics = Graphics.FromHdc(hdcDest))
             {
-                // 使用反序列化的水印数据
                 Font font = new Font(_watermarkData.FontName, _watermarkData.FontSize, (FontStyle)_watermarkData.FontStyle);
                 Color color = Color.FromArgb(_watermarkData.ColorA, _watermarkData.ColorR, _watermarkData.ColorG, _watermarkData.ColorB);
 
