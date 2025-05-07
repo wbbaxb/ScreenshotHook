@@ -138,7 +138,7 @@ namespace ScreenshotHook.HookLibrary
 
             using (var graphics = Graphics.FromHdc(hdcDest))
             {
-                Font font = new Font(_watermarkData.FontName, _watermarkData.FontSize, (FontStyle)_watermarkData.FontStyle);
+                Font font = new Font(_watermarkData.FontFamily, _watermarkData.FontSize, (FontStyle)_watermarkData.FontStyle);
                 Color color = Color.FromArgb(_watermarkData.ColorA, _watermarkData.ColorR, _watermarkData.ColorG, _watermarkData.ColorB);
 
                 SizeF textSize = graphics.MeasureString(text, font);

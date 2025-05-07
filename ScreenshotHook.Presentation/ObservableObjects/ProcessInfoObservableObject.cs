@@ -7,6 +7,7 @@ namespace ScreenshotHook.Presentation.ObservableObjects
         private int _processId;
         private string _processName;
         private bool _isHooked;
+        private WatermarkObservableObject _watermarkObservableObject;
 
         public int ProcessId
         {
@@ -24,6 +25,12 @@ namespace ScreenshotHook.Presentation.ObservableObjects
         {
             get { return _isHooked; }
             set { _isHooked = value; OnPropertyChanged(); }
+        }
+
+        public WatermarkObservableObject WatermarkObservableObject
+        {
+            get { return _watermarkObservableObject; }
+            set { _watermarkObservableObject = value; OnPropertyChanged(); }
         }
     }
 }

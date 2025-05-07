@@ -184,10 +184,10 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             SaveSettingsIfChanged();
 
-            var watermarkData = new
+            var watermarkData = new WatermarkObservableObject()
             {
                 Text = Watermark.Text,
-                FontName = Watermark.FontFamily,
+                FontFamily = Watermark.FontFamily,
                 FontSize = Watermark.FontSize,
                 ColorR = Watermark.ColorR,
                 ColorG = Watermark.ColorG,
@@ -200,6 +200,8 @@ namespace ScreenshotHook.Presentation.ViewModels
             HookApi.Hook(ProcessInfo.ProcessId, watermarkJson);
 
             ProcessInfo.IsHooked = true;
+
+            ProcessInfo.WatermarkObservableObject = watermarkData;
 
             if (!HookedProcesses.Contains(ProcessInfo))
             {

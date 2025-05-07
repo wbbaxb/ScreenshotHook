@@ -4,7 +4,7 @@
     {
         public string Text { get; set; }
 
-        public string FontName { get; set; }
+        public string FontFamily { get; set; }
 
         public int FontSize { get; set; }
 
