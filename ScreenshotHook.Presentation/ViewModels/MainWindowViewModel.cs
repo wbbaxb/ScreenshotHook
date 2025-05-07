@@ -186,6 +186,8 @@ namespace ScreenshotHook.Presentation.ViewModels
             string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
 
             HookApi.Hook(ProcessInfo.ProcessId, watermarkJson);
+
+            ProcessInfo.IsHooked = true;
         }
 
         private void SaveSettingsIfChanged()
@@ -238,6 +240,8 @@ namespace ScreenshotHook.Presentation.ViewModels
             }
 
             HookApi.UnHook(ProcessInfo.ProcessId);
+
+            ProcessInfo.IsHooked = false;
         }
     }
 }

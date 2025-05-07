@@ -102,7 +102,7 @@ namespace ScreenshotHook.Injector
                 return;
             }
 
-            MessageBox.Show("Injection successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show("Injection successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         [DllExport]
@@ -136,7 +136,7 @@ namespace ScreenshotHook.Injector
                         UNHOOK_COMMAND
                     );
 
-                    MessageBox.Show("UnHook successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show("UnHook successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

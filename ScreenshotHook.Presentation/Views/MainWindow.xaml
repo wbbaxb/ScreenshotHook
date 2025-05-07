@@ -20,6 +20,7 @@
 
     <Window.Resources>
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
         <behaviors:ScrollOnMouseWheelBehavior x:Key="ScrollOnMouseWheelBehavior" />
 
@@ -228,16 +229,22 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition />
                                                     <RowDefinition />
+                                                    <RowDefinition />
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
                                                 <TextBlock Grid.Row="1" Text="{Binding ProcessName, StringFormat=Name: {0}}" />
-
+                                                <TextBlock
+                                                    Grid.Row="2"
+                                                    FontSize="16"
+                                                    FontWeight="Bold"
+                                                    Foreground="{StaticResource mainColor}"
+                                                    Text="已注入"
+                                                    Visibility="{Binding IsHooked, Converter={StaticResource BoolToVisibilityConverter}}" />
                                                 <Grid.ToolTip>
                                                     <StackPanel>
                                                         <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
                                                         <TextBlock Text="{Binding ProcessName, StringFormat=Name: {0}}" />
                                                     </StackPanel>
-
                                                 </Grid.ToolTip>
                                             </Grid>
                                         </DataTemplate>

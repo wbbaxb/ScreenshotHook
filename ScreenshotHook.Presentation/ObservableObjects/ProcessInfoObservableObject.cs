@@ -6,6 +6,7 @@ namespace ScreenshotHook.Presentation.ObservableObjects
     {
         private int _processId;
         private string _processName;
+        private bool _isHooked;
 
         public int ProcessId
         {
@@ -17,6 +18,12 @@ namespace ScreenshotHook.Presentation.ObservableObjects
         {
             get { return _processName; }
             set { _processName = value; OnPropertyChanged(); }
+        }
+
+        public bool IsHooked
+        {
+            get { return _isHooked; }
+            set { _isHooked = value; OnPropertyChanged(); }
         }
     }
 }
