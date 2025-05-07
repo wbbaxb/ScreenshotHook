@@ -204,6 +204,8 @@
                                 </i:Interaction.Behaviors>
 
                                 <ListBox BorderThickness="0"
+                                         HorizontalContentAlignment="Stretch"
+                                         VerticalContentAlignment="Center"
                                          ItemsSource="{Binding FilteredProcessInfos}"
                                          SelectedItem="{Binding ProcessInfo}">
                                     <ListBox.ItemsPanel>
