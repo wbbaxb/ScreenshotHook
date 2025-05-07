@@ -21,6 +21,7 @@
     <Window.Resources>
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
         <behaviors:ScrollOnMouseWheelBehavior x:Key="ScrollOnMouseWheelBehavior" />
@@ -520,13 +521,17 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Button Command="{Binding HookCommand}" Content="注入" />
+                        <Button 
+                            Command="{Binding HookCommand}" 
+                            Content="注入" 
+                            IsEnabled="{Binding ProcessInfo.IsHooked, Converter={StaticResource InverseBoolConverter}}"/>
 
                         <Button
                             Grid.Column="1"
                             Margin="5,0"
                             Background="IndianRed"
                             Command="{Binding UnHookCommand}"
+                            IsEnabled="{Binding ProcessInfo.IsHooked}"
                             Content="取消注入" />
                     </Grid>
                 </StackPanel>
