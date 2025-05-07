@@ -29,11 +29,11 @@ namespace ScreenshotHook.Presentation.ViewModels
         public string FilterText
         {
             get { return _filterText; }
-            set 
+            set
             {
                 _filterText = value;
                 OnPropertyChanged();
-                FilteredProcessInfos?.Refresh(); 
+                FilteredProcessInfos?.Refresh();
             }
         }
 
@@ -45,6 +45,8 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ObservableCollection<ProcessInfoObservableObject> ProcessInfos { get; set; }
 
+        public ObservableCollection<ProcessInfoObservableObject> HookedProcesses { get; set; }
+
         public ObservableCollection<int> FontSizes { get; set; }
 
         public ObservableCollection<string> FontFamilies { get; set; }
@@ -55,7 +57,7 @@ namespace ScreenshotHook.Presentation.ViewModels
         {
             FilterText = string.Empty;
             ProcessInfos = new ObservableCollection<ProcessInfoObservableObject>();
-
+            HookedProcesses = new ObservableCollection<ProcessInfoObservableObject>();
             FilteredProcessInfos = CollectionViewSource.GetDefaultView(ProcessInfos);
 
             FilteredProcessInfos.Filter = obj =>
@@ -123,7 +125,17 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ICommand HookCommand => new RelayCommand(Hook);
 
-        public ICommand UnHookCommand => new RelayCommand(UnHook);
+        public ICommand UnHookCommand => new RelayCommand(() => UnHook(ProcessInfo));
+
+        public ICommand SelectCommand => new RelayCommand<ProcessInfoObservableObject>(p =>
+        {
+            if (p != null)
+            {
+                ProcessInfo = p;
+            }
+        });
+
+        public ICommand RemoveCommand => new RelayCommand<ProcessInfoObservableObject>(UnHook);
 
         public ICommand MinsizeCommand => new RelayCommand(() => Application.Current.MainWindow.WindowState = WindowState.Minimized);
 
@@ -131,10 +143,10 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private async Task<Process[]> GetProcessesAsync()
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 var allProcesses = Process.GetProcesses();
-                return allProcesses.Where(p => 
+                return allProcesses.Where(p =>
                 {
                     try
                     {
@@ -188,6 +200,11 @@ namespace ScreenshotHook.Presentation.ViewModels
             HookApi.Hook(ProcessInfo.ProcessId, watermarkJson);
 
             ProcessInfo.IsHooked = true;
+
+            if (!HookedProcesses.Contains(ProcessInfo))
+            {
+                HookedProcesses.Add(ProcessInfo);
+            }
         }
 
         private void SaveSettingsIfChanged()
@@ -231,17 +248,22 @@ namespace ScreenshotHook.Presentation.ViewModels
             return false;
         }
 
-        private void UnHook()
+        private void UnHook(ProcessInfoObservableObject process)
         {
-            if (ProcessInfo == null)
+            if (process == null)
             {
                 MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            HookApi.UnHook(ProcessInfo.ProcessId);
+            HookApi.UnHook(process.ProcessId);
 
-            ProcessInfo.IsHooked = false;
+            process.IsHooked = false;
+
+            if (HookedProcesses.Contains(process))
+            {
+                HookedProcesses.Remove(process);
+            }
         }
     }
 }
