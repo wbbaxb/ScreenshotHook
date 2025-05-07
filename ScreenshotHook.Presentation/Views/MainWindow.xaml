@@ -20,8 +20,8 @@
 
     <Window.Resources>
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
-
         <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
+        <behaviors:ScrollOnMouseWheelBehavior x:Key="ScrollOnMouseWheelBehavior" />
 
         <Style x:Key="cbxTbStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Black" />
@@ -35,7 +35,7 @@
             <Setter Property="Cursor" Value="Hand" />
         </Style>
 
-        <Style TargetType="ComboBoxItem">
+        <Style TargetType="ListBoxItem">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="Red" />
@@ -167,69 +167,85 @@
                 </TabControl.Resources>
 
                 <TabItem Header="进程选择">
-                    <StackPanel Margin="50" VerticalAlignment="Center">
+                    <Grid Margin="5">
                         <Grid Margin="0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                            <ComboBox ItemsSource="{Binding FilteredProcessInfos}" SelectedItem="{Binding ProcessInfo}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid MaxWidth="450" ToolTip="{Binding ProcessName}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Text="Filer Process: " />
 
-                                            <TextBlock Style="{StaticResource cbxTbStyle}" Text="{Binding ProcessId}" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Height="40"
+                                    VerticalAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    FontSize="16"
+                                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
 
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                Margin="10,0"
-                                                Style="{StaticResource cbxTbStyle}"
-                                                Text="-" />
+                                <Button
+                                    Grid.Column="2"
+                                    Width="100"
+                                    Margin="20,0,0,0"
+                                    Command="{Binding RefreshCommand}"
+                                    Content="重新获取进程" />
+                            </Grid>
 
-                                            <TextBlock
-                                                Grid.Column="2"
-                                                Foreground="{StaticResource mainColor}"
-                                                Style="{StaticResource cbxTbStyle}"
-                                                Text="{Binding ProcessName}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                            <Separator Grid.Row="1" BorderBrush="Gray" />
 
-                            <Button
-                                Grid.Column="1"
-                                Width="60"
-                                Margin="10,0,0,0"
-                                Command="{Binding RefreshCommand}"
-                                Content="Refresh" />
+                            <ScrollViewer
+                                Grid.Row="2"
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Auto">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:ScrollOnMouseWheelBehavior />
+                                </i:Interaction.Behaviors>
+
+                                <ListBox
+                                    BorderThickness="0"
+                                    ItemsSource="{Binding FilteredProcessInfos}"
+                                    SelectedItem="{Binding ProcessInfo}">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="230" Margin="10">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
+                                                <TextBlock Grid.Row="1" Text="{Binding ProcessName, StringFormat=Name: {0}}" />
+
+                                                <Grid.ToolTip>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
+                                                        <TextBlock Text="{Binding ProcessName, StringFormat=Name: {0}}" />
+                                                    </StackPanel>
+
+                                                </Grid.ToolTip>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
                         </Grid>
-
-                        <Grid Margin="0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBox
-                                Height="40"
-                                VerticalContentAlignment="Center"
-                                FontSize="18"
-                                Text="{Binding FilterText}" />
-
-                            <Button
-                                Grid.Column="1"
-                                Width="60"
-                                Margin="10,0,0,0"
-                                Command="{Binding FilterCommand}"
-                                Content="Filter" />
-                        </Grid>
-                    </StackPanel>
+                    </Grid>
                 </TabItem>
 
                 <TabItem Header="水印设置">
@@ -394,11 +410,18 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontSize="16"
-                        Foreground="Gray"
-                        Text="{Binding ProcessInfo.ProcessName, StringFormat=目标进程: {0}}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Foreground="Gray"
+                            Text="{Binding ProcessInfo.ProcessName, StringFormat=目标进程: {0}}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Foreground="Gray"
+                            Text="{Binding ProcessInfo.ProcessId, StringFormat=({0})}" />
+                    </StackPanel>
 
                     <Grid Margin="0,10">
                         <Grid.ColumnDefinitions>
@@ -406,14 +429,14 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Button Command="{Binding HookCommand}" Content="Hook" />
+                        <Button Command="{Binding HookCommand}" Content="注入" />
 
                         <Button
                             Grid.Column="1"
                             Margin="5,0"
                             Background="IndianRed"
                             Command="{Binding UnHookCommand}"
-                            Content="UnHook" />
+                            Content="取消注入" />
                     </Grid>
                 </StackPanel>
 

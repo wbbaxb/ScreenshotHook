@@ -1,4 +1,4 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using ScreenshotHook.Presentation.ObservableObjects;
 using ScreenshotHook.Presentation.Utilities;
@@ -29,7 +29,12 @@ namespace ScreenshotHook.Presentation.ViewModels
         public string FilterText
         {
             get { return _filterText; }
-            set { _filterText = value; OnPropertyChanged(); }
+            set 
+            {
+                _filterText = value;
+                OnPropertyChanged();
+                FilteredProcessInfos?.Refresh(); 
+            }
         }
 
         public WatermarkObservableObject Watermark
@@ -61,9 +66,8 @@ namespace ScreenshotHook.Presentation.ViewModels
 
                 if (string.IsNullOrEmpty(text)) return true;
 
-                if (item.ProcessName.Equals(text, StringComparison.OrdinalIgnoreCase) || item.ProcessId.ToString().Equals(text))
+                if (item.ProcessName.Contains(text, StringComparison.OrdinalIgnoreCase) || item.ProcessId.ToString().Equals(text))
                 {
-                    ProcessInfo = item;
                     return true;
                 }
 
@@ -112,11 +116,10 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ICommand RefreshCommand => new RelayCommand(async () =>
         {
+            FilterText = string.Empty;
             var processes = await GetProcessesAsync();
             BindingProcesses(processes);
         });
-
-        public ICommand FilterCommand => new RelayCommand(FilteredProcessInfos.Refresh);
 
         public ICommand HookCommand => new RelayCommand(Hook);
 
@@ -157,8 +160,6 @@ namespace ScreenshotHook.Presentation.ViewModels
                     ProcessName = item.ProcessName
                 });
             }
-
-            ProcessInfo = FilteredProcessInfos.Cast<ProcessInfoObservableObject>().FirstOrDefault();
         }
 
         private void Hook()
