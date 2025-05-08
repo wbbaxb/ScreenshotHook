@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using ScreenshotHook.Presentation.ObservableObjects;
 using ScreenshotHook.Presentation.Utilities;
@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Globalization;
 
 namespace ScreenshotHook.Presentation.ViewModels
 {
@@ -86,7 +89,7 @@ namespace ScreenshotHook.Presentation.ViewModels
                 FontSize = Properties.Settings.Default.WatermarkFontSize,
                 FontFamily = Properties.Settings.Default.WatermarkFontFamily,
             };
-           
+
             InitializeFontSizes();
 
             InitializeFontFamilies();
@@ -100,9 +103,15 @@ namespace ScreenshotHook.Presentation.ViewModels
         private void InitializeFontFamilies()
         {
             FontFamilies = new ObservableCollection<string>();
-            foreach (var fontFamily in System.Windows.Media.Fonts.SystemFontFamilies)
+            var currentCulture = CultureInfo.CurrentUICulture;
+            var currentXmlLanguage = XmlLanguage.GetLanguage(currentCulture.IetfLanguageTag);
+
+            foreach (var fontFamily in Fonts.SystemFontFamilies)
             {
-                FontFamilies.Add(fontFamily.Source);
+                if (fontFamily.FamilyNames.TryGetValue(currentXmlLanguage, out string displayName))
+                {
+                    FontFamilies.Add(displayName);
+                }
             }
         }
 
@@ -180,7 +189,7 @@ namespace ScreenshotHook.Presentation.ViewModels
             {
                 MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            } 
+            }
 
             var watermarkData = new WatermarkObservableObject()
             {
