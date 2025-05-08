@@ -23,5 +23,8 @@
     <Setting Name="WatermarkColorA" Type="System.Byte" Scope="User">
       <Value Profile="(Default)">128</Value>
     </Setting>
+    <Setting Name="ProcessName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WeChat</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

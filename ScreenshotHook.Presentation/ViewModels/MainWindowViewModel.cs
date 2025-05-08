@@ -55,7 +55,7 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public MainWindowViewModel()
         {
-            FilterText = string.Empty;
+            FilterText = Properties.Settings.Default.ProcessName;
             ProcessInfos = new ObservableCollection<ProcessInfoObservableObject>();
             HookedProcesses = new ObservableCollection<ProcessInfoObservableObject>();
             FilteredProcessInfos = CollectionViewSource.GetDefaultView(ProcessInfos);
@@ -86,7 +86,7 @@ namespace ScreenshotHook.Presentation.ViewModels
                 FontSize = Properties.Settings.Default.WatermarkFontSize,
                 FontFamily = Properties.Settings.Default.WatermarkFontFamily,
             };
-
+           
             InitializeFontSizes();
 
             InitializeFontFamilies();
@@ -180,9 +180,7 @@ namespace ScreenshotHook.Presentation.ViewModels
             {
                 MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            }
-
-            SaveSettingsIfChanged();
+            } 
 
             var watermarkData = new WatermarkObservableObject()
             {
@@ -205,6 +203,8 @@ namespace ScreenshotHook.Presentation.ViewModels
             ProcessInfo.IsHooked = true;
 
             ProcessInfo.WatermarkObservableObject = watermarkData;
+
+            SaveSettingsIfChanged();
 
             if (!HookedProcesses.Contains(ProcessInfo))
             {
@@ -236,6 +236,9 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             needSave |= UpdateSettingIfChanged(Watermark.FontFamily, Properties.Settings.Default.WatermarkFontFamily,
                 v => Properties.Settings.Default.WatermarkFontFamily = v);
+
+            needSave |= UpdateSettingIfChanged(ProcessInfo.ProcessName, Properties.Settings.Default.ProcessName,
+                v => Properties.Settings.Default.ProcessName = v);
 
             if (needSave)
             {

@@ -106,5 +106,17 @@ namespace ScreenshotHook.Presentation.Properties {
                 this["WatermarkColorA"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WeChat")]
+        public string ProcessName {
+            get {
+                return ((string)(this["ProcessName"]));
+            }
+            set {
+                this["ProcessName"] = value;
+            }
+        }
     }
 }
