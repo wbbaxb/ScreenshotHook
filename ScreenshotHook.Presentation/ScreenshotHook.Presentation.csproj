@@ -8,6 +8,10 @@
 	<PlatformTarget>x64</PlatformTarget>
 	<AssemblyName>ScreenshotHook</AssemblyName>
 	<RootNamespace>ScreenshotHook.Presentation</RootNamespace>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	<AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
+	<Platforms>x64</Platforms>
 </PropertyGroup>
 
 <ItemGroup>

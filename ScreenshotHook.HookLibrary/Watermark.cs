@@ -1,4 +1,4 @@
-﻿namespace ScreenshotHook.Framework
+﻿namespace ScreenshotHook.HookLibrary
 {
     public class Watermark
     {

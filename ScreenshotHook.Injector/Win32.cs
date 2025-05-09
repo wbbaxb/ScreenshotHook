@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ScreenshotHook.Framework
+namespace ScreenshotHook.Injector
 {
-    public class Win32
+    internal class Win32
     {
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -40,16 +40,5 @@ namespace ScreenshotHook.Framework
         public static extern IntPtr LoadLibrary(string lpFileName);
 
         #endregion 动态加载非托管Dll
-
-        #region GDI截图
-
-        [DllImport("gdi32.dll")]
-        public static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int w, int h, IntPtr hdcSrc, int xSrc, int ySrc, int rop);
-
-        //委托的参数和返回值必须与win32 api函数的参数和返回值一致
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate bool BitBltDelegate(IntPtr hdcDest, int xDest, int yDest, int w, int h, IntPtr hdcSrc, int xSrc, int ySrc, int rop);
-
-        #endregion
     }
 }

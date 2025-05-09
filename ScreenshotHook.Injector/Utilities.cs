@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace ScreenshotHook.Framework
+namespace ScreenshotHook.Injector
 {
     public class Utilities
     {

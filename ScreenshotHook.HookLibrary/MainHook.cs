@@ -1,6 +1,5 @@
 ﻿using EasyHook;
 using Newtonsoft.Json;
-using ScreenshotHook.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
