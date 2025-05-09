@@ -11,7 +11,7 @@
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	<AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
-	<Platforms>x64</Platforms>
+	<Platforms>AnyCPU;x86;x64</Platforms>
 </PropertyGroup>
 
 <ItemGroup>
