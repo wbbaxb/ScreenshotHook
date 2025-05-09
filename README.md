@@ -5,10 +5,34 @@
 
 ScreenshotHook是一个用于在截图时自动添加水印的工具。通过Hook截图API（如BitBlt），能够在截图过程中自动添加自定义水印
 
+## ⚠️ 重要编译说明
+
+**注意**：本项目需要同时编译x86和x64两个版本才能正常工作！
+
+默认的"Any CPU"配置**无法正常工作**！推荐使用以下方法之一进行编译：
+
+1.  **使用Git Bash脚本 (推荐)**:
+    *   确保你已安装 [Git for Windows](https://git-scm.com/download/win)，它包含了 Git Bash。
+    *   在项目根目录下，运行 `build_all.sh` 脚本。
+    *   **编译Debug版本 (默认)**:
+        ```bash
+        bash build_all.sh
+        ```
+    *   **编译Release版本**:
+        ```bash
+        bash build_all.sh release
+        ```
+    *   此脚本会自动尝试编译x86和x64两个平台。
+
+2.  **手动在Visual Studio中编译**:
+    *   打开 `ScreenshotHook.sln`。
+    *   选择所需的配置 (Debug 或 Release)。
+    *   将解决方案平台配置切换为 "x86" 并生成解决方案。
+    *   然后将解决方案平台配置切换为 "x64" 并再次生成解决方案。
+
 ## 项目结构
 
 - **ScreenshotHook.Presentation**: 主程序，基于.NET 8.0开发的WPF应用
-- **ScreenshotHook.Framework**: 公共框架库，基于.NET Framework开发
 - **ScreenshotHook.HookLibrary**: Hook实现库，基于.NET Framework开发
 - **ScreenshotHook.Injector**: 注入器，基于.NET Framework开发
 
@@ -28,6 +52,13 @@ ScreenshotHook是一个用于在截图时自动添加水印的工具。通过Hoo
 ### 跨框架通信
 
 主程序通过P/Invoke（DllImport）方式调用注入器中的静态Hook方法。
+
+### 跨位数进程注入
+
+项目支持32位和64位进程注入：
+- 根据目标进程的位数（32位或64位）自动选择对应版本的DLL进行注入
+- 编译时会生成x86和x64两个版本的HookLibrary
+- 支持从64位应用注入32位进程，反之亦然
 
 ### 钩子管理与进程隔离
 
@@ -58,6 +89,26 @@ ScreenshotHook是一个用于在截图时自动添加水印的工具。通过Hoo
 4. 成功应用后关闭配置工具，然后重新加载解决方案
 
 > 注意：每次修改项目引用或更新项目结构后可能需要重新配置DllExport
+
+### 多平台编译配置 (通过Git Bash脚本)
+
+项目根目录下的 `build_all.sh` 脚本用于一次性编译所有必需的平台 (x86 和 x64)，并支持Debug和Release配置。
+
+1.  **确保已安装Git Bash**: Git Bash 通常随 [Git for Windows](https://git-scm.com/download/win) 一起安装。
+2.  **将msbuild所在目录添加至PAHT环境变量中**
+3.  **运行脚本**:
+    打开 Git Bash，导航到项目根目录，然后执行相应的命令：
+    *   **编译Debug版本 (默认)**:
+        ```bash
+        bash build_all.sh
+        ```
+    *   **编译Release版本**:
+        ```bash
+        bash build_all.sh release
+        ```
+4.  **检查输出**: 
+    *   Debug版本的DLL文件将分别位于 `builds\Debug\x86` 和 `builds\Debug\x64` 目录下。
+    *   Release版本的DLL文件将分别位于 `builds\Release\x86` 和 `builds\Release\x64` 目录下。
 
 ## 开源引用
 
