@@ -1,5 +1,6 @@
-﻿using ScreenshotHook.Presentation.ViewModels;
+﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace ScreenshotHook.Presentation.Views
 {
@@ -11,7 +12,20 @@ namespace ScreenshotHook.Presentation.Views
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainWindowViewModel();
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Hide();
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
         }
     }
 }

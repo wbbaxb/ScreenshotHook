@@ -17,6 +17,10 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None">
 
+    <Window.DataContext>
+        <viewmodels:MainWindowViewModel />
+    </Window.DataContext>
+
     <Window.Resources>
         <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
@@ -123,6 +127,18 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+
+            <tb:TaskbarIcon x:Name="MyNotifyIcon"
+                            DoubleClickCommand="{Binding ShowCommand}"
+                            IconSource="/Images/Logo.ico"
+                            LeftClickCommand="{Binding ShowCommand}"
+                            ToolTipText="ScreenshotHook">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding ShutdownCommand}" Header="退出" />
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
 
             <Grid>
                 <StackPanel Margin="10"

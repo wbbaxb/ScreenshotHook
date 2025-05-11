@@ -149,7 +149,16 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ICommand MinsizeCommand => new RelayCommand(() => Application.Current.MainWindow.WindowState = WindowState.Minimized);
 
-        public ICommand CloseCommand => new RelayCommand(Application.Current.Shutdown);
+        public ICommand CloseCommand => new RelayCommand(Application.Current.MainWindow.Close);
+
+        public ICommand ShowCommand => new RelayCommand(() =>
+        {
+            Application.Current.MainWindow.Show();
+            Application.Current.MainWindow.WindowState = WindowState.Normal;
+            Application.Current.MainWindow.Activate();
+        });
+
+        public ICommand ShutdownCommand => new RelayCommand(Application.Current.Shutdown);
 
         private async Task<Process[]> GetProcessesAsync()
         {
