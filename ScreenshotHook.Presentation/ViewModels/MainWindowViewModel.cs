@@ -147,6 +147,12 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ICommand UnHookCommand => new RelayCommand(() => UnHook(ProcessInfo));
 
+        public ICommand ReHookCommand => new RelayCommand(() =>
+        {
+            UnHook(ProcessInfo);
+            Hook();
+        });
+
         public ICommand SelectCommand => new RelayCommand<ProcessInfoObservableObject>(p =>
         {
             if (p != null)

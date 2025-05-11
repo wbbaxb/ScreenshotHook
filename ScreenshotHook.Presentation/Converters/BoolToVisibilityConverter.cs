@@ -7,11 +7,18 @@ namespace ScreenshotHook.Presentation.Converters
 {
     internal class BoolToVisibilityConverter : IValueConverter
     {
+        public bool Inverse { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is bool val)
             {
-                return val ? Visibility.Visible : Visibility.Collapsed;
+                if (!Inverse)
+                {
+                    return val ? Visibility.Visible : Visibility.Collapsed;
+                }
+
+                return val ? Visibility.Collapsed : Visibility.Visible;
             }
 
             return Visibility.Collapsed;
