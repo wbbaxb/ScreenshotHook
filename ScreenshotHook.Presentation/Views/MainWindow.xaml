@@ -24,6 +24,7 @@
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <converters:ByteRangeConverter x:Key="ByteRangeConverter" />
+        <converters:BitToStringConverter x:Key="BitToStringConverter" />
         <behaviors:ScrollOnMouseWheelBehavior x:Key="ScrollOnMouseWheelBehavior" />
         <behaviors:TextBoxCaretBehavior x:Key="TextBoxCaretBehavior" />
 
@@ -178,9 +179,9 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock VerticalAlignment="Center"
+                                <TextBlock Margin="10,0,0,0"
+                                           VerticalAlignment="Center"
                                            FontSize="16"
-                                           Margin="10,0,0,0"
                                            Text="筛选进程: " />
 
                                 <TextBox Grid.Column="1"
@@ -190,9 +191,9 @@
                                          VerticalContentAlignment="Center"
                                          FontSize="16"
                                          Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
-                                         <i:Interaction.Behaviors>
-                                             <behaviors:TextBoxCaretBehavior />
-                                         </i:Interaction.Behaviors>
+                                    <i:Interaction.Behaviors>
+                                        <behaviors:TextBoxCaretBehavior />
+                                    </i:Interaction.Behaviors>
                                 </TextBox>
 
                                 <Button Grid.Column="2"
@@ -211,9 +212,9 @@
                                     <behaviors:ScrollOnMouseWheelBehavior />
                                 </i:Interaction.Behaviors>
 
-                                <ListBox BorderThickness="0"
-                                         HorizontalContentAlignment="Stretch"
+                                <ListBox HorizontalContentAlignment="Stretch"
                                          VerticalContentAlignment="Center"
+                                         BorderThickness="0"
                                          ItemsSource="{Binding FilteredProcessInfos}"
                                          SelectedItem="{Binding ProcessInfo}">
                                     <ListBox.ItemsPanel>
@@ -231,7 +232,8 @@
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel>
                                                     <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
-                                                    <TextBlock Grid.Row="1" Text="{Binding ProcessName, StringFormat=Name: {0}}" />
+                                                    <TextBlock Text="{Binding ProcessName, StringFormat=Name: {0}}" />
+                                                    <TextBlock Text="{Binding Bit, Converter={StaticResource BitToStringConverter}, StringFormat=位数: {0}}" />
                                                 </StackPanel>
 
                                                 <Grid Grid.Column="1">
@@ -254,8 +256,9 @@
 
                                                 <Grid.ToolTip>
                                                     <StackPanel>
-                                                        <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
-                                                        <TextBlock Text="{Binding ProcessName, StringFormat=Name: {0}}" />
+                                                        <TextBlock Text="{Binding ProcessId, StringFormat=进程ID: {0}}" />
+                                                        <TextBlock Text="{Binding ProcessName, StringFormat=进程名: {0}}" />
+                                                        <TextBlock Text="{Binding Bit, Converter={StaticResource BitToStringConverter}, StringFormat=位数: {0}}" />
                                                     </StackPanel>
                                                 </Grid.ToolTip>
                                             </Grid>
@@ -296,9 +299,9 @@
                                              Height="30"
                                              VerticalContentAlignment="Center"
                                              Text="{Binding Watermark.Text, UpdateSourceTrigger=PropertyChanged}">
-                                             <i:Interaction.Behaviors>
-                                                 <behaviors:TextBoxCaretBehavior />
-                                             </i:Interaction.Behaviors>
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:TextBoxCaretBehavior />
+                                        </i:Interaction.Behaviors>
                                     </TextBox>
                                 </Grid>
 
@@ -352,18 +355,18 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="80" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <TextBlock VerticalAlignment="Center" Text="R:" />
                                         <Slider Grid.Column="1" Value="{Binding Watermark.ColorR}" />
                                         <TextBlock Grid.Column="2"
                                                    Width="30"
-                                                   Text="{Binding Watermark.ColorR}"
                                                    VerticalAlignment="Center"
+                                                   Text="{Binding Watermark.ColorR}"
                                                    TextAlignment="Right" />
-                                        <TextBox Grid.Column="3"  
+                                        <TextBox Grid.Column="3"
                                                  Margin="20,0"
-                                                 VerticalAlignment="Center" 
-                                                 Text="{Binding Watermark.ColorR,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource ByteRangeConverter}}" />
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding Watermark.ColorR, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ByteRangeConverter}}" />
                                     </Grid>
 
                                     <Grid Grid.Row="2" Margin="0,10">
@@ -380,10 +383,10 @@
                                                    Width="30"
                                                    Text="{Binding Watermark.ColorG}"
                                                    TextAlignment="Right" />
-                                        <TextBox Grid.Column="3"  
+                                        <TextBox Grid.Column="3"
                                                  Margin="20,0"
-                                                 VerticalAlignment="Center" 
-                                                 Text="{Binding Watermark.ColorG,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource ByteRangeConverter}}" />
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding Watermark.ColorG, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ByteRangeConverter}}" />
                                     </Grid>
 
                                     <Grid Grid.Row="3" Margin="0,10">
@@ -400,10 +403,10 @@
                                                    Width="30"
                                                    Text="{Binding Watermark.ColorB}"
                                                    TextAlignment="Right" />
-                                        <TextBox Grid.Column="3"  
+                                        <TextBox Grid.Column="3"
                                                  Margin="20,0"
-                                                 VerticalAlignment="Center" 
-                                                 Text="{Binding Watermark.ColorB,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource ByteRangeConverter}}" />
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding Watermark.ColorB, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ByteRangeConverter}}" />
                                     </Grid>
 
                                     <Grid Grid.Row="4" Margin="0,10">
@@ -420,10 +423,10 @@
                                                    Width="30"
                                                    Text="{Binding Watermark.ColorA}"
                                                    TextAlignment="Right" />
-                                        <TextBox Grid.Column="3"  
+                                        <TextBox Grid.Column="3"
                                                  Margin="20,0"
-                                                 VerticalAlignment="Center" 
-                                                 Text="{Binding Watermark.ColorA,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource ByteRangeConverter}}" />
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding Watermark.ColorA, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ByteRangeConverter}}" />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -443,6 +446,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="60" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="60" />
                                     <ColumnDefinition Width="140" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock HorizontalAlignment="Center" Text="进程ID" />
@@ -450,6 +454,9 @@
                                            HorizontalAlignment="Center"
                                            Text="进程名" />
                                 <TextBlock Grid.Column="2"
+                                           HorizontalAlignment="Center"
+                                           Text="位数" />
+                                <TextBlock Grid.Column="3"
                                            HorizontalAlignment="Center"
                                            Text="操作" />
                             </Grid>
@@ -467,6 +474,7 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="60" />
                                                     <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="60" />
                                                     <ColumnDefinition Width="140" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock HorizontalAlignment="Center"
@@ -476,8 +484,11 @@
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center"
                                                            Text="{Binding ProcessName}" />
-
-                                                <StackPanel Grid.Column="2"
+                                                <TextBlock Grid.Column="2"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Text="{Binding Bit, Converter={StaticResource BitToStringConverter}}" />
+                                                <StackPanel Grid.Column="3"
                                                             HorizontalAlignment="Center"
                                                             Orientation="Horizontal">
                                                     <Button Width="60"
@@ -521,6 +532,10 @@
                                    FontSize="16"
                                    Foreground="Gray"
                                    Text="{Binding ProcessInfo.ProcessName, StringFormat=目标进程: {0}}" />
+                        <TextBlock VerticalAlignment="Center"
+                                   FontSize="16"
+                                   Foreground="Gray"
+                                   Text="{Binding ProcessInfo.Bit, Converter={StaticResource BitToStringConverter}, StringFormat=({0})}" />
                         <TextBlock VerticalAlignment="Center"
                                    FontSize="16"
                                    Foreground="Gray"

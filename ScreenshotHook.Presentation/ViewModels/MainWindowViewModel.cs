@@ -1,11 +1,13 @@
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using ScreenshotHook.Presentation.Enums;
 using ScreenshotHook.Presentation.ObservableObjects;
 using ScreenshotHook.Presentation.Utilities;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,7 +15,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Globalization;
 
 namespace ScreenshotHook.Presentation.ViewModels
 {
@@ -178,7 +179,8 @@ namespace ScreenshotHook.Presentation.ViewModels
                 ProcessInfos.Add(new ProcessInfoObservableObject()
                 {
                     ProcessId = item.Id,
-                    ProcessName = item.ProcessName
+                    ProcessName = item.ProcessName,
+                    Bit = Win32.GetProcessBit(item),
                 });
             }
         }
@@ -204,7 +206,13 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
 
-            if (!HookApi.Hook(ProcessInfo.ProcessId, watermarkJson))
+            var process = new
+            {
+                ProcessInfo.ProcessId,
+                ProcessInfo.ProcessName,
+            };
+
+            if (!HookApi.Hook(ProcessInfo.ProcessId, ProcessInfo.Bit == Bit.Bit64, watermarkJson))
             {
                 return;
             }
@@ -273,7 +281,7 @@ namespace ScreenshotHook.Presentation.ViewModels
                 return;
             }
 
-            if (!HookApi.UnHook(process.ProcessId))
+            if (!HookApi.UnHook(process.ProcessId, process.Bit == Bit.Bit64))
             {
                 return;
             }

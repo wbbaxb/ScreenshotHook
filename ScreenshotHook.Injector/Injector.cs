@@ -1,6 +1,5 @@
 using EasyHook;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -11,9 +10,9 @@ namespace ScreenshotHook.Injector
         private const string UNHOOK_COMMAND = "UNHOOK_COMMAND"; // 卸载钩子标识
 
         [DllExport]
-        public static bool Hook(int processId, string watermark)
+        public static bool Hook(int processId, bool is64Bit, string watermark)
         {
-            string dllPath = GetDllPath(processId);
+            string dllPath = GetDllPath(is64Bit);
 
             if (!File.Exists(dllPath))
             {
@@ -41,9 +40,9 @@ namespace ScreenshotHook.Injector
         }
 
         [DllExport]
-        public static bool UnHook(int processId)
+        public static bool UnHook(int processId, bool is64Bit)
         {
-            string dllPath = GetDllPath(processId);
+            string dllPath = GetDllPath(is64Bit);
 
             if (!File.Exists(dllPath))
             {
@@ -70,18 +69,10 @@ namespace ScreenshotHook.Injector
             }
         }
 
-        private static string GetDllPath(int processId)
+        private static string GetDllPath(bool is64Bit)
         {
-            var process = Process.GetProcessById(processId);
-
-            if (process == null)
-            {
-                return string.Empty;
-            }
-
-            bool is64 = Utilities.Is64BitProcess(process);
-
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, is64 ? "x64" : "x86", "ScreenshotHook.HookLibrary.dll");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, is64Bit ?
+                "x64" : "x86", "ScreenshotHook.HookLibrary.dll");
         }
 
         private static void ShowError(string text)

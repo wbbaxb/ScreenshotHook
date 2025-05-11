@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using ScreenshotHook.Presentation.Enums;
 
 namespace ScreenshotHook.Presentation.ObservableObjects
 {
@@ -8,6 +9,7 @@ namespace ScreenshotHook.Presentation.ObservableObjects
         private string _processName;
         private bool _isHooked;
         private WatermarkObservableObject _watermarkObservableObject;
+        private Bit _bit;
 
         public int ProcessId
         {
@@ -31,6 +33,12 @@ namespace ScreenshotHook.Presentation.ObservableObjects
         {
             get { return _watermarkObservableObject; }
             set { _watermarkObservableObject = value; OnPropertyChanged(); }
+        }
+
+        public Bit Bit
+        {
+            get { return _bit; }
+            set { _bit = value; OnPropertyChanged(); }
         }
     }
 }
