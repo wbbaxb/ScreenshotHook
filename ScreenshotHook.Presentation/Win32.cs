@@ -10,6 +10,23 @@ namespace ScreenshotHook.Presentation
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         private static extern bool IsWow64Process([In] System.IntPtr hProcess, [Out] out bool wow64Process);
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+
         public static Bit GetProcessBit(Process process)
         {
             if (!Environment.Is64BitOperatingSystem)
@@ -29,7 +46,7 @@ namespace ScreenshotHook.Presentation
                     return Bit.Bit64;
                 }
             }
-            catch 
+            catch
             {
                 return Bit.Unknown;
             }
