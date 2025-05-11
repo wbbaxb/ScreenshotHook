@@ -181,16 +181,28 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private void BindingProcesses(Process[] processes)
         {
-            ProcessInfos.Clear();
+            var currentProcessesById = ProcessInfos.ToDictionary(p => p.ProcessId);
+            var newProcessIds = processes.Select(p => p.Id).ToHashSet();
 
-            foreach (var item in processes)
+            // 添加新进程
+            foreach (var process in processes)
             {
-                ProcessInfos.Add(new ProcessInfoObservableObject()
+                if (!currentProcessesById.ContainsKey(process.Id))
                 {
-                    ProcessId = item.Id,
-                    ProcessName = item.ProcessName,
-                    Bit = Win32.GetProcessBit(item),
-                });
+                    ProcessInfos.Add(new ProcessInfoObservableObject()
+                    {
+                        ProcessId = process.Id,
+                        ProcessName = process.ProcessName,
+                        Bit = Win32.GetProcessBit(process),
+                    });
+                }
+            }
+
+            // 移除已不存在的进程
+            var processesToRemove = ProcessInfos.Where(p => !newProcessIds.Contains(p.ProcessId)).ToList();
+            foreach (var processToRemove in processesToRemove)
+            {
+                ProcessInfos.Remove(processToRemove);
             }
         }
 
@@ -214,12 +226,6 @@ namespace ScreenshotHook.Presentation.ViewModels
             };
 
             string watermarkJson = System.Text.Json.JsonSerializer.Serialize(watermarkData);
-
-            var process = new
-            {
-                ProcessInfo.ProcessId,
-                ProcessInfo.ProcessName,
-            };
 
             if (!HookApi.Hook(ProcessInfo.ProcessId, ProcessInfo.Bit == Bit.Bit64, watermarkJson))
             {
