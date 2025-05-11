@@ -4,6 +4,7 @@ using ScreenshotHook.Presentation.Enums;
 using ScreenshotHook.Presentation.ObservableObjects;
 using ScreenshotHook.Presentation.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -167,7 +168,33 @@ namespace ScreenshotHook.Presentation.ViewModels
             Application.Current.MainWindow.Activate();
         });
 
-        public ICommand ShutdownCommand => new RelayCommand(Application.Current.Shutdown);
+        public ICommand ShutdownCommand => new RelayCommand(() =>
+        {
+            var errorList = new List<string>();
+            try
+            {
+                foreach (var processInfo in HookedProcesses)
+                {
+                    if (processInfo != null && processInfo.IsHooked)
+                    {
+                        HookApi.UnHook(processInfo.ProcessId, processInfo.Bit == Bit.Bit64);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorList.Add(ex.Message);
+            }
+            finally
+            {
+                if (errorList.Count > 0)
+                {
+                    MessageBox.Show("Failed to unhook processes: " + string.Join("\n", errorList));
+                }
+
+                Application.Current.Shutdown();
+            }
+        });
 
         private async Task<Process[]> GetProcessesAsync()
         {
