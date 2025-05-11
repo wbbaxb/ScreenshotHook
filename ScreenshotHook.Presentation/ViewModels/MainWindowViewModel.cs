@@ -27,7 +27,13 @@ namespace ScreenshotHook.Presentation.ViewModels
         public ProcessInfoObservableObject ProcessInfo
         {
             get { return _processInfo; }
-            set { _processInfo = value; OnPropertyChanged(); }
+            set
+            {
+                _processInfo = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanHook));
+                OnPropertyChanged(nameof(CanUnhook));
+            }
         }
 
         public string FilterText
@@ -56,6 +62,10 @@ namespace ScreenshotHook.Presentation.ViewModels
         public ObservableCollection<string> FontFamilies { get; set; }
 
         public ICollectionView FilteredProcessInfos { get; }
+
+        public bool CanHook => ProcessInfo != null && !ProcessInfo.IsHooked;
+
+        public bool CanUnhook => ProcessInfo != null && ProcessInfo.IsHooked;
 
         public MainWindowViewModel()
         {
@@ -128,7 +138,6 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         public ICommand RefreshCommand => new RelayCommand(async () =>
         {
-            FilterText = string.Empty;
             var processes = await GetProcessesAsync();
             BindingProcesses(processes);
         });
@@ -208,9 +217,8 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private void Hook()
         {
-            if (ProcessInfo == null)
+            if (!CheckProcessIsRunning(ProcessInfo))
             {
-                MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -233,6 +241,9 @@ namespace ScreenshotHook.Presentation.ViewModels
             }
 
             ProcessInfo.IsHooked = true;
+
+            OnPropertyChanged(nameof(CanHook));
+            OnPropertyChanged(nameof(CanUnhook));
 
             ProcessInfo.WatermarkObservableObject = watermarkData;
 
@@ -290,9 +301,8 @@ namespace ScreenshotHook.Presentation.ViewModels
 
         private void UnHook(ProcessInfoObservableObject process)
         {
-            if (process == null)
+            if (!CheckProcessIsRunning(process))
             {
-                MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -303,10 +313,37 @@ namespace ScreenshotHook.Presentation.ViewModels
 
             process.IsHooked = false;
 
+            OnPropertyChanged(nameof(CanHook));
+            OnPropertyChanged(nameof(CanUnhook));
+
             if (HookedProcesses.Contains(process))
             {
                 HookedProcesses.Remove(process);
             }
+        }
+
+        private bool CheckProcessIsRunning(ProcessInfoObservableObject processInfo)
+        {
+            if (processInfo == null)
+            {
+                MessageBox.Show("Please select a process first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            try
+            {
+                Process.GetProcessById(processInfo.ProcessId);
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("The process is not running. Click OK to refresh the list.",
+                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                RefreshCommand.Execute(null);
+                HookedProcesses.Remove(processInfo);
+                return false;
+            }
+
+            return true;
         }
     }
 }
