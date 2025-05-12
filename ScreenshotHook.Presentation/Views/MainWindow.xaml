@@ -25,7 +25,6 @@
         <SolidColorBrush x:Key="mainColor" Color="#2196F3" />
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" Inverse="True" />
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <converters:ByteRangeConverter x:Key="ByteRangeConverter" />
         <converters:BitToStringConverter x:Key="BitToStringConverter" />
@@ -565,12 +564,13 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Command="{Binding HookCommand}"
-                                Content="注入"
-                                Visibility="{Binding CanHook, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                Content="注入" 
+                                IsEnabled="{Binding CanHook}" />
 
                         <Button Command="{Binding ReHookCommand}"
                                 Content="重新注入"
-                                Visibility="{Binding CanHook, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                                IsEnabled="{Binding CanUnhook}"
+                                Visibility="{Binding CanUnhook, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                         <Button Grid.Column="1"
                                 Margin="5,0"
