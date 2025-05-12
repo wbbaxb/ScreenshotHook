@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:ScreenshotHook.Presentation"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/styles/BrushStyles.xaml" />
+                <ResourceDictionary Source="/styles/ScrollViewerStyles.xaml" />
+                <ResourceDictionary Source="/styles/TextBoxStyles.xaml" />
+                <ResourceDictionary Source="/styles/TabItemStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
