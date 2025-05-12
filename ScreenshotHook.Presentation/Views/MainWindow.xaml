@@ -227,47 +227,115 @@
                                     <behaviors:ScrollOnMouseWheelBehavior />
                                 </i:Interaction.Behaviors>
 
-                                <ListBox HorizontalContentAlignment="Stretch"
-                                         VerticalContentAlignment="Center"
+                                <ListBox VerticalContentAlignment="Center"
                                          BorderThickness="0"
                                          ItemsSource="{Binding FilteredProcessInfos}"
                                          SelectedItem="{Binding ProcessInfo}">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <UniformGrid Columns="2" />
+                                            <WrapPanel Width="540" Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
 
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Margin" Value="5" />
+                                            <Setter Property="Padding" Value="0" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="HorizontalAlignment" Value="Center" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListBoxItem">
+                                                        <Border x:Name="Border"
+                                                                Background="White"
+                                                                BorderBrush="#E0E0E0"
+                                                                BorderThickness="1"
+                                                                CornerRadius="8">
+                                                            <Border.Effect>
+                                                                <DropShadowEffect BlurRadius="4"
+                                                                                  Opacity="0.2"
+                                                                                  ShadowDepth="1"
+                                                                                  Color="#A0A0A0" />
+                                                            </Border.Effect>
+                                                            <ContentPresenter Margin="0" />
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource mainColor}" />
+                                                                <Setter TargetName="Border" Property="Background" Value="#F5F9FF" />
+                                                            </Trigger>
+                                                            <Trigger Property="IsSelected" Value="True">
+                                                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource mainColor}" />
+                                                                <Setter TargetName="Border" Property="Background" Value="#EBF5FF" />
+                                                                <Setter TargetName="Border" Property="BorderThickness" Value="2" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid Width="230" Margin="10">
+                                            <Grid Width="240"
+                                                  MaxHeight="120"
+                                                  Margin="5"
+                                                  HorizontalAlignment="Center">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <StackPanel>
-                                                    <TextBlock Text="{Binding ProcessId, StringFormat=ID: {0}}" />
-                                                    <TextBlock Text="{Binding ProcessName, StringFormat=Name: {0}}" />
-                                                    <TextBlock Text="{Binding Bit, Converter={StaticResource BitToStringConverter}, StringFormat=位数: {0}}" />
+                                                <StackPanel Height="60" VerticalAlignment="Center">
+                                                    <TextBlock Margin="0,0,0,4"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#303030"
+                                                               Text="{Binding ProcessName}"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <StackPanel Margin="0,2,0,0" Orientation="Horizontal">
+                                                        <Border Margin="0,0,8,0"
+                                                                Padding="6,2"
+                                                                Background="#F0F0F0"
+                                                                CornerRadius="4">
+                                                            <TextBlock FontSize="11"
+                                                                       Foreground="#505050"
+                                                                       Text="{Binding ProcessId, StringFormat=ID: {0}}" />
+                                                        </Border>
+                                                        <Border Padding="6,2"
+                                                                Background="#F0F0F0"
+                                                                CornerRadius="4">
+                                                            <TextBlock FontSize="11"
+                                                                       Foreground="#505050"
+                                                                       Text="{Binding Bit, Converter={StaticResource BitToStringConverter}}" />
+                                                        </Border>
+                                                    </StackPanel>
                                                 </StackPanel>
 
-                                                <Grid Grid.Column="1">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <TextBlock FontSize="16"
-                                                               FontWeight="Bold"
-                                                               Foreground="{StaticResource mainColor}"
-                                                               Text="已注入水印："
-                                                               Visibility="{Binding IsHooked, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                                    <TextBlock Grid.Row="1"
-                                                               FontFamily="{Binding WatermarkObservableObject.FontFamily}"
-                                                               FontSize="{Binding WatermarkObservableObject.FontSize}"
-                                                               Foreground="{Binding WatermarkObservableObject.Color, Converter={StaticResource ColorToBrushConverter}}"
-                                                               Text="{Binding WatermarkObservableObject.Text}"
-                                                               Visibility="{Binding IsHooked, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                                </Grid>
+                                                <Border Grid.Column="1"
+                                                        Margin="6,0,0,0"
+                                                        Padding="8,6"
+                                                        Background="#F8F8F8"
+                                                        BorderBrush="#E8E8E8"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Visibility="{Binding IsHooked, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <StackPanel>
+                                                        <TextBlock Margin="0,0,0,4"
+                                                                   HorizontalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   FontWeight="Bold"
+                                                                   Foreground="{StaticResource mainColor}"
+                                                                   Text="已注入水印" />
+                                                        <TextBlock MaxWidth="100"
+                                                                   HorizontalAlignment="Center"
+                                                                   FontFamily="{Binding WatermarkObservableObject.FontFamily}"
+                                                                   FontSize="{Binding WatermarkObservableObject.FontSize}"
+                                                                   Foreground="{Binding WatermarkObservableObject.Color, Converter={StaticResource ColorToBrushConverter}}"
+                                                                   Text="{Binding WatermarkObservableObject.Text}"
+                                                                   TextWrapping="Wrap" />
+                                                    </StackPanel>
+                                                </Border>
 
                                                 <Grid.ToolTip>
                                                     <StackPanel>
@@ -564,13 +632,13 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Command="{Binding HookCommand}"
-                                Content="注入" 
+                                Content="注入"
                                 IsEnabled="{Binding CanHook}" />
 
                         <Button Command="{Binding ReHookCommand}"
                                 Content="重新注入"
                                 IsEnabled="{Binding CanUnhook}"
-                                Visibility="{Binding CanUnhook, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                Visibility="{Binding CanUnhook, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                         <Button Grid.Column="1"
                                 Margin="5,0"
