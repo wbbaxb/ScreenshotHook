@@ -22,6 +22,15 @@ fi
 
 MSBUILD_CMD="msbuild.exe" 
 
+echo "正在还原 NuGet 包..."
+"$MSBUILD_CMD" "$SOLUTION_FILE" //t:restore
+if [ $? -ne 0 ]; then
+    echo "错误：NuGet 包还原失败！"
+    exit 1
+else
+    echo "NuGet 包还原成功。"
+fi
+
 echo ""
 echo "开始编译 x86 平台 ($CONFIGURATION)..."
 "$MSBUILD_CMD" "$SOLUTION_FILE" "//p:Configuration=$CONFIGURATION" //p:Platform=x86
