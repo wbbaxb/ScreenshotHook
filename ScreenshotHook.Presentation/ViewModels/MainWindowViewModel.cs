@@ -207,11 +207,36 @@ namespace ScreenshotHook.Presentation.ViewModels
             return await Task.Run(() =>
             {
                 var allProcesses = Process.GetProcesses();
+                var currentProcessId = Process.GetCurrentProcess().Id;
                 return allProcesses.Where(p =>
                 {
                     try
                     {
-                        return p.SessionId > 0;
+                        // 排除系统进程
+                        if (p.SessionId <= 0)
+                        {
+                            return false;
+                        }
+
+                        // 排除没有主模块的进程
+                        if (p.MainModule == null)
+                        {
+                            return false;
+                        }
+
+                        // 排除已退出进程
+                        if (p.HasExited)
+                        {
+                            return false;
+                        }
+
+                        // 排除自身
+                        if (p.Id == currentProcessId)
+                        {
+                            return false;
+                        }
+
+                        return true;
                     }
                     catch
                     {
@@ -220,7 +245,7 @@ namespace ScreenshotHook.Presentation.ViewModels
                 }).ToArray();
             });
         }
-
+   
         private void BindingProcesses(Process[] processes)
         {
             var currentProcessesById = ProcessInfos.ToDictionary(p => p.ProcessId);
