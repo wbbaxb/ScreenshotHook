@@ -27,6 +27,12 @@ namespace ScreenshotHook.Presentation
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassrName, string lpWindowName);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
         public static Bit GetProcessBit(Process process)
         {
             if (!Environment.Is64BitOperatingSystem)

@@ -25,6 +25,8 @@ namespace ScreenshotHook.Presentation.ViewModels
         private string _filterText;
         private WatermarkObservableObject _watermark;
 
+        public static string Title => "ScreenshotHook";
+
         public ProcessInfoObservableObject ProcessInfo
         {
             get { return _processInfo; }

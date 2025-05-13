@@ -9,7 +9,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:viewmodels="clr-namespace:ScreenshotHook.Presentation.ViewModels"
-        Title="ScreenHook"
+        Title="{Binding Title}"
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="NoResize"
@@ -102,7 +102,7 @@
                             DoubleClickCommand="{Binding ShowCommand}"
                             IconSource="/Images/Logo.ico"
                             LeftClickCommand="{Binding ShowCommand}"
-                            ToolTipText="ScreenshotHook">
+                            ToolTipText="{Binding Title}">
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu>
                         <MenuItem Command="{Binding ShutdownCommand}" Header="退出" />
@@ -115,7 +115,7 @@
                            VerticalAlignment="Center"
                            FontSize="18"
                            Foreground="{StaticResource mainColor}"
-                           Text="ScreenHook" />
+                           Text="{Binding Title}" />
                 <StackPanel Margin="10"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
